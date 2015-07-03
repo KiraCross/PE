@@ -36,7 +36,7 @@ void processaEntrada (FILE *arq, char caminhoarquivo[MV])
 	fscanf(arq,"%d",&departamento[k]);
 	fimd = departamento[k];
 	
-		if(departamento[k] != -1){
+		if(departamento[k] != -1){ 
 		printf("Departamento: %d\n\n",departamento[k]);
 		k++;
 		
