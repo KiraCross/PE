@@ -158,7 +158,7 @@ int main()
 				printf("Numero Inválido, repita a operação\n\n");	break;
 		}
 	}while(k!=0);
-	}
+	} 
 	
 	else printf("PROGRAMA FINALIZADO \n\n");
 
