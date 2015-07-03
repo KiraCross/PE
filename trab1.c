@@ -16,7 +16,7 @@ int abrirArquivo(FILE *arq, char caminhoarquivo[MV]) //identificar se o arquivo 
 }
 	   
 
-void processaEntrada (FILE *arq, char caminhoarquivo[MV])
+int processaEntrada (FILE *arq, char caminhoarquivo[MV])
 {	
 	
 	int departamento [MV];
@@ -28,6 +28,7 @@ void processaEntrada (FILE *arq, char caminhoarquivo[MV])
 	float lucro[MP];
 	int fimq = 0,fimv=0,fimp=0,fimd=0;
 	int i=0,j=0,h=0,k=0;
+	int mj=0,mh=0;
 	
 	
 	arq = fopen(caminhoarquivo,"r");
@@ -44,6 +45,11 @@ void processaEntrada (FILE *arq, char caminhoarquivo[MV])
 			fscanf(arq,"%d",&produto[h]);
 			fimp = produto[h];
 			
+			if(mh>MP){ //Verifica se o numero de produtos do arquivo atinge o maior que o permitido.
+								printf("Numero de Produtos Excedido. Conserte o Arquivo e Reinicie o Programa\n");
+								fimq=-1; fimp=-1; fimv=-1; fimd=-1; return 0;}
+			else{
+				mh++;
 				if(fimp != -1){
 				fscanf(arq,"%d",&valor[h]);
 				fscanf(arq,"%f",&lucro[h]);
@@ -56,22 +62,27 @@ void processaEntrada (FILE *arq, char caminhoarquivo[MV])
 						fscanf(arq,"%d",&vendedor[j]);
 						fimv = vendedor[j];
 						
-						if(vendedor[j] != -1){
-							printf("Código do Vendedor: %d\n\n",vendedor[j]);
-							j++;
-											
-								while(fimq != -1){ //Encerra a leitura de Quantidades e Passa pro proximo Vendedor Caso Encontre o Valor -1
-									fscanf(arq,"%d",&quantidade[i]);
-									fimq = quantidade[i];
-									
-									if (quantidade[i] != -1){
-								    printf("Quantidade Vendida %d: %d\n",i+1,quantidade[i]);
-								    qtotal = qtotal + quantidade[i];
-									i++;}
-									
-									else{ printf("Total: %d \n\n",qtotal); }
+							if(vendedor[j] != -1){
+								if(mj>MV){ //Verifica se o numero de vendedores do arquivo atinge o maior que o permitido.
+								printf("Numero de Vendedores Excedido. Conserte o Arquivo e Reinicie o Programa\n");
+								fimq=-1; fimp=-1; fimv=-1; fimd=-1; return 0;}
+								else{
+								printf("Código do Vendedor: %d\n\n",vendedor[j]);
+								j++; mj++;
+												
+									while(fimq != -1){ //Encerra a leitura de Quantidades e Passa pro proximo Vendedor Caso Encontre o Valor -1
+										fscanf(arq,"%d",&quantidade[i]);
+										fimq = quantidade[i];
+										
+										if (quantidade[i] != -1){
+									    printf("Quantidade Vendida %d: %d\n",i+1,quantidade[i]);
+									    qtotal = qtotal + quantidade[i];
+										i++;}
+										
+										else{ printf("Total: %d \n\n",qtotal); }
+									}
+								fimq=0; qtotal=0; i=0;
 								}
-							fimq=0; qtotal=0; i=0;
 							}
 											
 						}
@@ -79,12 +90,14 @@ void processaEntrada (FILE *arq, char caminhoarquivo[MV])
 					}
 				}
 			}
+			}
 			fimp=0; h=0;
 		}
 	}
 	fimd=0; k=0;
 	
-	fclose(arq);	
+	fclose(arq);
+	return 1;
 
 }
 
@@ -122,32 +135,32 @@ int menu (){ //Responsável pela impressão do menu
 int main()
 {
 	FILE *arqEntrada=NULL;
-	char caminhoarquivo[MV]="entrada.txt";
+	char caminhoarquivo[50]="entrada.txt";
 	int k=1;
 	
-	if (abrirArquivo(arqEntrada,caminhoarquivo) == 1){ //Verifica se o arquivo existe ou não	
-	processaEntrada(arqEntrada,caminhoarquivo);
+	if (abrirArquivo(arqEntrada,caminhoarquivo) && processaEntrada(arqEntrada,caminhoarquivo) == 1){
+
 	
 		do{//Exibir menu
 			switch(menu()){
-	
+				
 			case 1: //Ranking Total de Vendas
-				vendasValor();	break;
+				vendasValor();										break;
 			case 2: //Ranking Quantidade de Vendas
-				vendasQuantidade();	break;
+				vendasQuantidade();									break;
 			case 3: //Lista Produtos por Valor
-				produtoValor();	break;
+				produtoValor();										break;
 			case 4: //Lista Produtos por Lucro
-				produtoLucro();	break;
+				produtoLucro();										break;
 			case 0: //Sair
-				printf("PROGRAMA FINALIZADO \n\n"); k=0;		break;
+				printf("PROGRAMA FINALIZADO \n\n"); k=0;			break;
 			default://Numero Inválido
 				printf("Numero Inválido, repita a operação\n\n");	break;
 		}
 	}while(k!=0);
 	}
 	
-	else printf("Programa Finalizado\n");
+	else printf("PROGRAMA FINALIZADO \n\n");
 
 	return 0;
 }
