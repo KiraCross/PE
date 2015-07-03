@@ -127,7 +127,7 @@ int main()
 				break;
 			case 3: //Lista Produtos por Valor
 				break;
-			case 4: //Lista Produtos por Lucro
+			case 4: //Lista Produtos por Lucro 
 				break;
 			case 0: //Sair
 				printf("PROGRAMA FINALIZADO \n\n"); k=0;		break;
