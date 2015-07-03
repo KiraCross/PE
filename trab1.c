@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define TF 50
+#define MV 50
+#define MP 500
 
-int abrirArquivo(FILE *arq, char caminhoarquivo[TF]) //identificar se o arquivo existe ou não
+int abrirArquivo(FILE *arq, char caminhoarquivo[MV]) //identificar se o arquivo existe ou não
 {	
 	arq = fopen(caminhoarquivo,"r");
 	
@@ -15,58 +16,89 @@ int abrirArquivo(FILE *arq, char caminhoarquivo[TF]) //identificar se o arquivo 
 }
 	   
 
-void processaEntrada (FILE *arq, char caminhoarquivo[TF])
+void processaEntrada (FILE *arq, char caminhoarquivo[MV])
 {	
-	int departamento [5];
-	int produto[5];
-	int valor[6];
-	int quantidade[50];
+	
+	int departamento [MV];
+	int produto[MP];
+	int valor[MP];
+	int quantidade[MP];
 	int qtotal=0;
-	int fimq = 0,fimv= 0;
-	float lucro[5];
-	int vendedor[50];
-	int i=0,j=0;
+	int vendedor[MV];
+	float lucro[MP];
+	int fimq = 0,fimv=0,fimp=0,fimd=0;
+	int i=0,j=0,h=0,k=0;
 	
 	
 	arq = fopen(caminhoarquivo,"r");
-	fscanf(arq,"%d",departamento);
-	printf("Departamento: %d\n\n",*departamento);
 	
-	fscanf(arq,"%d %d %f",produto,valor,lucro);
-	printf("Código do Produto: %d\t Valor do produto: %d\t Lucro: %.1f%% \n\n",*produto,*valor,*lucro*100);
+	while(fimd != -1){ //Encerra Departamentos
+	fscanf(arq,"%d",&departamento[k]);
+	fimd = departamento[k];
 	
-		while(fimv != -1){ //Encerra os Vendedores do Departamento
+		if(departamento[k] != -1){
+		printf("Departamento: %d\n\n",departamento[k]);
+		k++;
 		
-		fscanf(arq,"%d",&vendedor[j]);
-		fimv = vendedor[j];
-		
-		if(vendedor[j] != -1){
-			printf("Código do Vendedor: %d\n\n",vendedor[j]);
-			j++;
-		
-		
-				while(fimq != -1){ //Encerra a leitura de Quantidades e Passa pro proximo Vendedor Caso Encontre o Valor -1
-					fscanf(arq,"%d",&quantidade[i]);
-					fimq = quantidade[i];
+			while(fimp != -1){ //Encerra os Produtos do Departamento
+			fscanf(arq,"%d",&produto[h]);
+			fimp = produto[h];
+			
+				if(fimp != -1){
+				fscanf(arq,"%d",&valor[h]);
+				fscanf(arq,"%f",&lucro[h]);
+				
+					if(produto[h] != -1){
+					printf("Código do Produto: %d\t Valor do produto: %d\t Lucro: %.1f%% \n\n",produto[h],valor[h],lucro[h]*100);
+					h++;
 					
-					if (quantidade[i] != -1){
-				    printf("Quantidade Vendida %d: %d\n",i+1,quantidade[i]);
-				    qtotal = qtotal + quantidade[i];
-					i++;}
-					
-					else{ printf("Total: %d \n\n",qtotal); }
+						while(fimv != -1){ //Encerra os Vendedores do Departamento
+						fscanf(arq,"%d",&vendedor[j]);
+						fimv = vendedor[j];
+						
+						if(vendedor[j] != -1){
+							printf("Código do Vendedor: %d\n\n",vendedor[j]);
+							j++;
+											
+								while(fimq != -1){ //Encerra a leitura de Quantidades e Passa pro proximo Vendedor Caso Encontre o Valor -1
+									fscanf(arq,"%d",&quantidade[i]);
+									fimq = quantidade[i];
+									
+									if (quantidade[i] != -1){
+								    printf("Quantidade Vendida %d: %d\n",i+1,quantidade[i]);
+								    qtotal = qtotal + quantidade[i];
+									i++;}
+									
+									else{ printf("Total: %d \n\n",qtotal); }
+								}
+							fimq=0; qtotal=0; i=0;
+							}
+											
+						}
+						fimv=0; j=0;
+					}
 				}
-			fimq=0; qtotal =0; i=0;
 			}
-			
-			
+			fimp=0; h=0;
 		}
-		fimv = 0; j=0;
+	}
+	fimd=0; k=0;
+	
 	fclose(arq);	
 
+}
 
+void vendasValor(){
+
+}
+void vendasQuantidade(){
+
+}
+void produtoValor(){
 	
-
+}
+void produtoLucro(){
+	
 }
 
 int menu (){ //Responsável pela impressão do menu
@@ -90,7 +122,7 @@ int menu (){ //Responsável pela impressão do menu
 int main()
 {
 	FILE *arqEntrada=NULL;
-	char caminhoarquivo[100]="C:\\Users\\JúlioCésar\\entrada.txt";
+	char caminhoarquivo[MV]="entrada.txt";
 	int k=1;
 	
 	if (abrirArquivo(arqEntrada,caminhoarquivo) == 1){ //Verifica se o arquivo existe ou não	
@@ -100,13 +132,13 @@ int main()
 			switch(menu()){
 	
 			case 1: //Ranking Total de Vendas
-				break;
+				vendasValor();	break;
 			case 2: //Ranking Quantidade de Vendas
-				break;
+				vendasQuantidade();	break;
 			case 3: //Lista Produtos por Valor
-				break;
+				produtoValor();	break;
 			case 4: //Lista Produtos por Lucro
-				break;
+				produtoLucro();	break;
 			case 0: //Sair
 				printf("PROGRAMA FINALIZADO \n\n"); k=0;		break;
 			default://Numero Inválido
