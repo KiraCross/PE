@@ -4,6 +4,10 @@
 #define MV 50
 #define MP 500
 
+	typedef struct {
+		float pvpl[200];
+	} depart;
+
 int abrirArquivo(FILE *arq, char caminhoarquivo[MV]) //identificar se o arquivo existe ou não
 {	
 	arq = fopen(caminhoarquivo,"r");
@@ -16,12 +20,8 @@ int abrirArquivo(FILE *arq, char caminhoarquivo[MV]) //identificar se o arquivo 
 }
 	   
 
-int processaEntrada (FILE *arq, char caminhoarquivo[MV])
+int processaEntrada (FILE *arq, char caminhoarquivo[MV],depart departamento[MP],int v[MP], int *quantdepartamentos)
 {	
-	typedef struct {
-		float pvpl[200];
-	} depart;
-	depart departamento[MP];
 	int valor;
 	int quantidade[100];
 	int qtotal=0;
@@ -29,8 +29,8 @@ int processaEntrada (FILE *arq, char caminhoarquivo[MV])
 	int fimq = 0,fimv=0,fimp=0,fimd=0;
 	int i=0,j=0,h=0,k=0;
 	int mj=0,mh=0;
-	int v[MV],o=0; //criada pra guardar quantos espaços H serão usados em cada struct
-	
+	int o=0; //criada pra guardar quantos espaços H serão usados em cada struct
+	*quantdepartamentos=0;
 	
 	arq = fopen(caminhoarquivo,"r");
 	
@@ -41,8 +41,8 @@ int processaEntrada (FILE *arq, char caminhoarquivo[MV])
 		if(k != -1){
 		
 			while(fimp != -1){ //Encerra os Produtos do Departamento
-			fscanf(arq,"%f",&departamento[k].pvpl[h]); // pergunta produto
-			fimp = departamento[k].pvpl[h];
+			fscanf(arq,"%f",&departamento[*quantdepartamentos].pvpl[h]); // pergunta produto
+			fimp = departamento[*quantdepartamentos].pvpl[h];
 			
 			if(mh>MP){ //Verifica se o numero de produtos do arquivo atinge o maior que o permitido.
 								printf("Numero de Produtos Excedido. Conserte o Arquivo e Reinicie o Programa\n");
@@ -53,14 +53,14 @@ int processaEntrada (FILE *arq, char caminhoarquivo[MV])
 				fscanf(arq,"%d",&valor);
 				fscanf(arq,"%f",&lucro);
 				
-					if(departamento[k].pvpl[h] != -1){
+					if(departamento[*quantdepartamentos].pvpl[h] != -1){
 					h++;
 					
 						while(fimv != -1){ //Encerra os Vendedores do Departamento
-						fscanf(arq,"%f",&departamento[k].pvpl[h]); //pergunta vendedor
-						fimv = departamento[k].pvpl[h];
+						fscanf(arq,"%f",&departamento[*quantdepartamentos].pvpl[h]); //pergunta vendedor
+						fimv = departamento[*quantdepartamentos].pvpl[h];
 						
-							if(departamento[k].pvpl[h] != -1){
+							if(departamento[*quantdepartamentos].pvpl[h] != -1){
 								if(mj>MV){ //Verifica se o numero de vendedores do arquivo atinge o maior que o permitido.
 								printf("Numero de Vendedores Excedido. Conserte o Arquivo e Reinicie o Programa\n");
 								fimq=-1; fimp=-1; fimv=-1; fimd=-1; return 0;}
@@ -77,37 +77,56 @@ int processaEntrada (FILE *arq, char caminhoarquivo[MV])
 										}
 
 									}
-								departamento[k].pvpl[h]=qtotal*valor;
+								departamento[*quantdepartamentos].pvpl[h]=qtotal;
 								h++;
-								departamento[k].pvpl[h]=departamento[k].pvpl[h-1]*lucro;
+								departamento[*quantdepartamentos].pvpl[h]=qtotal*valor;
+								h++;
+								departamento[*quantdepartamentos].pvpl[h]=departamento[*quantdepartamentos].pvpl[h-1]*lucro;
 								h++;
 								fimq=0; qtotal=0; i=0;
 								}
-							}  departamento[k].pvpl[h]=departamento[k].pvpl[h-4]; h++;
+							}  departamento[*quantdepartamentos].pvpl[h]=departamento[*quantdepartamentos].pvpl[h-4]; h++;
 											
 						}
 						fimv=0; j=0;
 					}
 				}
+			}*quantdepartamentos=*quantdepartamentos+1;
 			}
-			}
-			fimp=0;v[o]=h; o++; h=0;
-		}
+			fimp=0;v[o]=h-2; o++; h=0; 
+		} 
 	}
 	fimd=0; k=0;
-
-for (k=1; k<=2;k++){
-	for (h=0; h<v[0]; h++){
-		printf ("%.2f\n",departamento[k].pvpl[h]);
-	}
-}
 	fclose(arq);
 	return 1;
-
 }
 
-void vendasValor(){
-
+void vendasValor(depart departamento[MP],int v[MP], int *quantdepartamentos){
+int vendedorproduto[100];
+int n,k;
+int i=0;
+for (n=0;n<=*quantdepartamentos;n++){ //ORGANIZAR UM VETOR SOMENTE COM PREÇO E VENDEDOR!
+	for (k=3;k<v[n];k=k+5){
+		vendedorproduto[i]=departamento[n].pvpl[k]; //passaando valor do preço
+		i++;
+		vendedorproduto[i]=departamento[n].pvpl[k-2]; // passando valor do vendedor
+		i++;
+	}
+}
+for (i=0;i<50;i++){ //TECNICA DA BOLHA PRA ORDERNAR
+	for (n=0;n<100;n=n+2){
+		if (vendedorproduto[n]<vendedorproduto[n+2]){
+			k=vendedorproduto[n];
+			vendedorproduto[n]=vendedorproduto[n+2];
+			vendedorproduto[n+2]=k;
+			k=vendedorproduto[n+1];
+			vendedorproduto[n+1]=vendedorproduto[n+3];
+			vendedorproduto[n+3]=k;
+		}
+	}
+}
+for (n=0;n<100;n=n+2)
+	printf ("Vendedor %d  -  R$ %d", vendedorproduto[n+1], vendedorproduto[n]);
 }
 void vendasQuantidade(){
 
@@ -142,15 +161,17 @@ int main()
 	FILE *arqEntrada=NULL;
 	char caminhoarquivo[50]="C:\\Users\\Renato\\Desktop\\entrada.txt";
 	int k=1;
+	depart vetor[MP];
+	int dado1[MP]; // indica ate que numero cada struct foi usado internamente
+	int quantdepusados; //Vai marcar quantos structs(departamentos) foram usados
 	
-	if (abrirArquivo(arqEntrada,caminhoarquivo) && processaEntrada(arqEntrada,caminhoarquivo) == 1){
-
+	if (abrirArquivo(arqEntrada,caminhoarquivo) && processaEntrada(arqEntrada,caminhoarquivo,vetor, dado1, &quantdepusados) == 1){
 	
 		do{//Exibir menu
 			switch(menu()){
 				
 			case 1: //Ranking Total de Vendas
-				vendasValor();										break;
+				vendasValor(vetor,dado1,&quantdepusados);										break;
 			case 2: //Ranking Quantidade de Vendas
 				vendasQuantidade();									break;
 			case 3: //Lista Produtos por Valor
