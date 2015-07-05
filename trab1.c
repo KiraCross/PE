@@ -102,7 +102,7 @@ int processaEntrada (FILE *arq, char caminhoarquivo[MV],depart departamento[MP],
 
 void vendasValor(FILE *arq, char caminhosaida[MV], depart departamento[MP],int v[MP], int *quantdepartamentos){// Função responsavel por imprimir a informação requisitada n. 1
 double vendedorproduto[100];
-int n,k;
+int n,k, c;
 int i=0;
 int w=0;
 for (n=0;n<=*quantdepartamentos;n++){ //ORGANIZAR UM VETOR SOMENTE COM PREÇO E VENDEDOR!
@@ -116,7 +116,7 @@ for (n=0;n<=*quantdepartamentos;n++){ //ORGANIZAR UM VETOR SOMENTE COM PREÇO E 
 }
 for (n=0;n<=*quantdepartamentos;n++){
 	for (i=1;i<=(float)((v[n]*2)/5);i=i+2){//JUNTAR VENDEDORES REPETIDOS
-		for (k=1;k<(float)((v[n]*2)/5);k++){
+		for (k=1;k<=(float)(v[n]/5);k++){
 			if (vendedorproduto[i]==vendedorproduto[i+(2*k)]){
 				vendedorproduto[i-1]=vendedorproduto[i-1]+vendedorproduto[i+(2*k)-1];
 				vendedorproduto[i+(2*k)]=0;
@@ -126,9 +126,9 @@ for (n=0;n<=*quantdepartamentos;n++){
 		}
 	}
 }
-for (n=0;n<=*quantdepartamentos;n++){
+for (c=0;c<=*quantdepartamentos;c++){
 	for (i=0;i<50;i++){ //TECNICA DA BOLHA PRA ORDERNAR
-		for (n=0;n<(float)(v[n]*2)/5;n=n+2){
+		for (n=0;n<(float)(v[c]*2)/5;n=n+2){
 			if (vendedorproduto[n]<vendedorproduto[n+2]){
 				k=vendedorproduto[n];
 				vendedorproduto[n]=vendedorproduto[n+2];
@@ -146,7 +146,7 @@ for (n=0;n<2*w;n=n+2)
 }
 void vendasQuantidade(FILE *arq, char caminhosaida[MV], depart departamento[MP],int v[MP], int *quantdepartamentos){// Função responsavel por imprimir a informação requisitada n. 2
 double vendedorproduto[100];
-int n,k;
+int n,k, c;
 int i=0;
 int w=0;
 for (n=0;n<=*quantdepartamentos;n++){ //ORGANIZAR UM VETOR SOMENTE COM TOTAL DE VENDAS E VENDEDOR!
@@ -160,7 +160,7 @@ for (n=0;n<=*quantdepartamentos;n++){ //ORGANIZAR UM VETOR SOMENTE COM TOTAL DE 
 }
 for (n=0;n<=*quantdepartamentos;n++){
 	for (i=1;i<=(float)((v[n]*2)/5);i=i+2){//JUNTAR VENDEDORES REPETIDOS
-		for (k=1;k<(float)((v[n]*2)/5);k++){
+		for (k=1;k<=(float)(v[n]/5);k++){
 			if (vendedorproduto[i]==vendedorproduto[i+(2*k)]){
 				vendedorproduto[i-1]=vendedorproduto[i-1]+vendedorproduto[i+(2*k)-1];
 				vendedorproduto[i+(2*k)]=0;
@@ -170,9 +170,9 @@ for (n=0;n<=*quantdepartamentos;n++){
 		}
 	}
 }
-for (n=0;n<=*quantdepartamentos;n++){
+for (c=0;c<=*quantdepartamentos;c++){
 	for (i=0;i<50;i++){ //TECNICA DA BOLHA PRA ORDERNAR
-		for (n=0;n<(float)(v[n]*2)/5;n=n+2){
+		for (n=0;n<(float)(v[c]*2)/5;n=n+2){
 			if (vendedorproduto[n]<vendedorproduto[n+2]){
 				k=vendedorproduto[n];
 				vendedorproduto[n]=vendedorproduto[n+2];
@@ -191,7 +191,7 @@ for (n=0;n<2*w;n=n+2)
 }
 void produtoValor(FILE *arq, char caminhosaida[MV], depart departamento[MP],int v[MP], int *quantdepartamentos){// Função responsavel por imprimir a informação requisitada n. 3
 double produtovalor[100];
-int n,k;
+int n,k,c;
 int i=0;
 int w=0;
 for (n=0;n<=*quantdepartamentos;n++){ //ORGANIZAR UM VETOR SOMENTE COM PRODUTO E PREÇO
@@ -205,7 +205,7 @@ for (n=0;n<=*quantdepartamentos;n++){ //ORGANIZAR UM VETOR SOMENTE COM PRODUTO E
 }
 for (n=0;n<=*quantdepartamentos;n++){ //JUNTAR PRODUTOS REPETIDOS
 	for (i=1;i<=(float)((v[n]*2)/5);i=i+2){
-		for (k=1;k<(float)((v[n]*2)/5);k++){
+		for (k=1;k<(float)(v[n]/5);k++){
 			if (produtovalor[i]==produtovalor[i+(2*k)]){
 				produtovalor[i-1]=produtovalor[i-1]+produtovalor[i+(2*k)-1];
 				produtovalor[i+(2*k)]=0;
@@ -216,7 +216,7 @@ for (n=0;n<=*quantdepartamentos;n++){ //JUNTAR PRODUTOS REPETIDOS
 		}
 	}
 }
-for (n=0;n<=*quantdepartamentos;n++){
+for (c=0;c<=*quantdepartamentos;c++){
 	for (i=0;i<50;i++){ //TECNICA DA BOLHA PRA ORDERNAR
 		for (n=0;n<=2*w;n=n+2){
 			if (produtovalor[n]<produtovalor[n+2]){
@@ -252,7 +252,7 @@ for (n=0;n<=*quantdepartamentos;n++){ //ORGANIZAR UM VETOR SOMENTE COM LUCRO E P
 }
 for (n=0;n<=*quantdepartamentos;n++){
 	for (i=1;i<=(float)((v[n]*2)/5);i=i+2){//JUNTAR PRODUTOS REPETIDOS
-		for (k=1;k<(float)((v[n]*2)/5);k++){
+		for (k=1;k<(float)(v[n]/5);k++){
 			if (produtovalor[i]==produtovalor[i+(2*k)]){
 				produtovalor[i-1]=produtovalor[i-1]+produtovalor[i+(2*k)-1];
 				produtovalor[i+(2*k)]=0;
