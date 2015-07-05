@@ -4,8 +4,8 @@
 #define MV 50
 #define MP 500
 
-	typedef struct {
-		float pvpl[200];
+	typedef struct { // Estrutura que fará um vetor, cada numero do vetor da struct será um departamento
+		float pvpl[250]; // Onde será guardado as informaçoes na ordem <produto, vendedor, total de vendas, preço total naquele vendedor e produto, lucro>. Essa ordem será repetida de 5 em 5 no vetor.
 	} depart;
 
 int abrirArquivo(FILE *arq, char caminhoarquivo[MV]) //identificar se o arquivo existe ou não
@@ -13,14 +13,13 @@ int abrirArquivo(FILE *arq, char caminhoarquivo[MV]) //identificar se o arquivo 
 	arq = fopen(caminhoarquivo,"r");
 	
 	if(arq==NULL){
-	printf("Arquivo Não Encontrado\n");
 	return 0;}
 	
 	else	return 1;	
 }
 	   
 
-int processaEntrada (FILE *arq, char caminhoarquivo[MV],depart departamento[MP],int v[MP], int *quantdepartamentos)
+int processaEntrada (FILE *arq, char caminhoarquivo[MV],depart departamento[MP],int v[MP], int *quantdepartamentos)// Ler e organizar os dados da forma que iremos trabalhar. Cada struct será um departamento, dentro será uma matriz organizada de 5 em 5, <produto, vendedor, total de venda, valor total, lucro>
 {	
 	int valor;
 	int quantidade[100];
@@ -30,7 +29,7 @@ int processaEntrada (FILE *arq, char caminhoarquivo[MV],depart departamento[MP],
 	int i=0,j=0,h=0,k=0;
 	int mj=0,mh=0;
 	int o=0; //criada pra guardar quantos espaços H serão usados em cada struct
-	*quantdepartamentos=0;
+	*quantdepartamentos=0; //Irá contar a quantidade de departamentos usados
 	
 	arq = fopen(caminhoarquivo,"r");
 	
@@ -41,7 +40,7 @@ int processaEntrada (FILE *arq, char caminhoarquivo[MV],depart departamento[MP],
 		if(k != -1){
 		
 			while(fimp != -1){ //Encerra os Produtos do Departamento
-			fscanf(arq,"%f",&departamento[*quantdepartamentos].pvpl[h]); // pergunta produto
+			fscanf(arq,"%f",&departamento[*quantdepartamentos].pvpl[h]); // Pergunta produto
 			fimp = departamento[*quantdepartamentos].pvpl[h];
 			
 			if(mh>MP){ //Verifica se o numero de produtos do arquivo atinge o maior que o permitido.
@@ -57,7 +56,7 @@ int processaEntrada (FILE *arq, char caminhoarquivo[MV],depart departamento[MP],
 					h++;
 					
 						while(fimv != -1){ //Encerra os Vendedores do Departamento
-						fscanf(arq,"%f",&departamento[*quantdepartamentos].pvpl[h]); //pergunta vendedor
+						fscanf(arq,"%f",&departamento[*quantdepartamentos].pvpl[h]); //Pergunta vendedor
 						fimv = departamento[*quantdepartamentos].pvpl[h];
 						
 							if(departamento[*quantdepartamentos].pvpl[h] != -1){
@@ -94,21 +93,21 @@ int processaEntrada (FILE *arq, char caminhoarquivo[MV],depart departamento[MP],
 			}
 			}
 			fimp=0;v[o]=h-2; o++; h=0; 
-		} *quantdepartamentos=*quantdepartamentos+1;
-	} *quantdepartamentos=*quantdepartamentos-2;
+		} *quantdepartamentos=*quantdepartamentos+1; 
+	} *quantdepartamentos=*quantdepartamentos-2; //Compensação para nao ter erro, pois repete 2 vezes a mais.
 	fimd=0; k=0;
 	fclose(arq);
 	return 1;
 }
 
-void vendasValor(depart departamento[MP],int v[MP], int *quantdepartamentos){
-int vendedorproduto[100];
+void vendasValor(FILE *arq, char caminhosaida[MV], depart departamento[MP],int v[MP], int *quantdepartamentos){// Função responsavel por imprimir a informação requisitada n. 1
+double vendedorproduto[100];
 int n,k;
 int i=0;
 int w=0;
 for (n=0;n<=*quantdepartamentos;n++){ //ORGANIZAR UM VETOR SOMENTE COM PREÇO E VENDEDOR!
 	for (k=3;k<v[n];k=k+5){
-		vendedorproduto[i]=departamento[n].pvpl[k]; //passaando valor do preço
+		vendedorproduto[i]=departamento[n].pvpl[k]; //passando valor do preço
 		i++;
 		vendedorproduto[i]=departamento[n].pvpl[k-2]; // passando valor do vendedor
 		i++;
@@ -116,8 +115,20 @@ for (n=0;n<=*quantdepartamentos;n++){ //ORGANIZAR UM VETOR SOMENTE COM PREÇO E 
 	}
 }
 for (n=0;n<=*quantdepartamentos;n++){
+	for (i=1;i<=(float)((v[n]*2)/5);i=i+2){//JUNTAR VENDEDORES REPETIDOS
+		for (k=1;k<(float)((v[n]*2)/5);k++){
+			if (produtovalor[i]==produtovalor[i+(2*k)]){
+				produtovalor[i-1]=produtovalor[i-1]+produtovalor[i+(2*k)-1];
+				produtovalor[i+(2*k)]=0;
+				produtovalor[i+(2*k)-1]=0;
+				w=w-1;
+			}
+		}
+	}
+}
+for (n=0;n<=*quantdepartamentos;n++){
 	for (i=0;i<50;i++){ //TECNICA DA BOLHA PRA ORDERNAR
-		for (n=0;n<=(float)(v[n]*2)/5;n=n+2){
+		for (n=0;n<(float)(v[n]*2)/5;n=n+2){
 			if (vendedorproduto[n]<vendedorproduto[n+2]){
 				k=vendedorproduto[n];
 				vendedorproduto[n]=vendedorproduto[n+2];
@@ -130,16 +141,17 @@ for (n=0;n<=*quantdepartamentos;n++){
 	}
 }
 for (n=0;n<2*w;n=n+2)
-	printf ("Vendedor %d  -  R$ %d\n", vendedorproduto[n+1], vendedorproduto[n]);
+	fprintf (arq, "(%.0lf, %.2lf) ", vendedorproduto[n+1], vendedorproduto[n]);
+	fprintf (arq, "\n");
 }
-void vendasQuantidade(depart departamento[MP],int v[MP], int *quantdepartamentos){
-int vendedorproduto[100];
+void vendasQuantidade(FILE *arq, char caminhosaida[MV], depart departamento[MP],int v[MP], int *quantdepartamentos){// Função responsavel por imprimir a informação requisitada n. 2
+double vendedorproduto[100];
 int n,k;
 int i=0;
 int w=0;
-for (n=0;n<=*quantdepartamentos;n++){ //ORGANIZAR UM VETOR SOMENTE COM PREÇO E VENDEDOR!
+for (n=0;n<=*quantdepartamentos;n++){ //ORGANIZAR UM VETOR SOMENTE COM TOTAL DE VENDAS E VENDEDOR!
 	for (k=2;k<v[n];k=k+5){
-		vendedorproduto[i]=departamento[n].pvpl[k]; //passaando valor do preço
+		vendedorproduto[i]=departamento[n].pvpl[k]; //passaando valor do total
 		i++;
 		vendedorproduto[i]=departamento[n].pvpl[k-1]; // passando valor do vendedor
 		i++;
@@ -147,8 +159,20 @@ for (n=0;n<=*quantdepartamentos;n++){ //ORGANIZAR UM VETOR SOMENTE COM PREÇO E 
 	}
 }
 for (n=0;n<=*quantdepartamentos;n++){
+	for (i=1;i<=(float)((v[n]*2)/5);i=i+2){//JUNTAR VENDEDORES REPETIDOS
+		for (k=1;k<(float)((v[n]*2)/5);k++){
+			if (produtovalor[i]==produtovalor[i+(2*k)]){
+				produtovalor[i-1]=produtovalor[i-1]+produtovalor[i+(2*k)-1];
+				produtovalor[i+(2*k)]=0;
+				produtovalor[i+(2*k)-1]=0;
+				w=w-1;
+			}
+		}
+	}
+}
+for (n=0;n<=*quantdepartamentos;n++){
 	for (i=0;i<50;i++){ //TECNICA DA BOLHA PRA ORDERNAR
-		for (n=0;n<=(float)(v[n]*2)/5;n=n+2){
+		for (n=0;n<(float)(v[n]*2)/5;n=n+2){
 			if (vendedorproduto[n]<vendedorproduto[n+2]){
 				k=vendedorproduto[n];
 				vendedorproduto[n]=vendedorproduto[n+2];
@@ -161,38 +185,40 @@ for (n=0;n<=*quantdepartamentos;n++){
 	}
 }
 for (n=0;n<2*w;n=n+2)
-	printf ("Vendedor %d  -  Quantidade total de vendas %d\n", vendedorproduto[n+1], vendedorproduto[n]);
+	fprintf (arq,"(%.0lf, %.0lf) ", vendedorproduto[n+1], vendedorproduto[n]);
+	fprintf (arq,"\n");
 
 }
-void produtoValor(depart departamento[MP],int v[MP], int *quantdepartamentos){
-int produtovalor[100];
+void produtoValor(FILE *arq, char caminhosaida[MV], depart departamento[MP],int v[MP], int *quantdepartamentos){// Função responsavel por imprimir a informação requisitada n. 3
+double produtovalor[100];
 int n,k;
 int i=0;
 int w=0;
-for (n=0;n<=*quantdepartamentos;n++){ //ORGANIZAR UM VETOR SOMENTE COM PREÇO E VENDEDOR!
+for (n=0;n<=*quantdepartamentos;n++){ //ORGANIZAR UM VETOR SOMENTE COM PRODUTO E PREÇO
 	for (k=3;k<v[n];k=k+5){
 		produtovalor[i]=departamento[n].pvpl[k]; //passaando valor do preço
 		i++;
-		produtovalor[i]=departamento[n].pvpl[k-3]; // passando valor do vendedor
+		produtovalor[i]=departamento[n].pvpl[k-3]; // passando valor do produto
 		i++;
-		w++; // Conta a quantidade de vendedores
+		w++; // Conta a quantidade
 	}
 }
 for (n=0;n<=*quantdepartamentos;n++){ //JUNTAR PRODUTOS REPETIDOS
 	for (i=1;i<=(float)((v[n]*2)/5);i=i+2){
-		for (k=1;k<=(float)((v[n]*2)/5);k++){
+		for (k=1;k<(float)((v[n]*2)/5);k++){
 			if (produtovalor[i]==produtovalor[i+(2*k)]){
 				produtovalor[i-1]=produtovalor[i-1]+produtovalor[i+(2*k)-1];
 				produtovalor[i+(2*k)]=0;
 				produtovalor[i+(2*k)-1]=0;
 				w=w-1;
+
 			}
 		}
 	}
 }
 for (n=0;n<=*quantdepartamentos;n++){
 	for (i=0;i<50;i++){ //TECNICA DA BOLHA PRA ORDERNAR
-		for (n=0;n<=(float)(v[n]*2)/5;n=n+2){
+		for (n=0;n<=2*w;n=n+2){
 			if (produtovalor[n]<produtovalor[n+2]){
 				k=produtovalor[n];
 				produtovalor[n]=produtovalor[n+2];
@@ -206,26 +232,27 @@ for (n=0;n<=*quantdepartamentos;n++){
 }
 
 for (n=0;n<2*w;n=n+2)
-	printf ("Produto %d  -  R$ %d\n", produtovalor[n+1], produtovalor[n]);
+	fprintf (arq, "(%.0lf, %.2lf) ", produtovalor[n+1], produtovalor[n]);
+	fprintf (arq, "\n");
 
 }
-void produtoLucro(depart departamento[MP],int v[MP], int *quantdepartamentos){
-int produtovalor[100];
+void produtoLucro(FILE *arq, char caminhosaida[MV], depart departamento[MP],int v[MP], int *quantdepartamentos){// Função responsavel por imprimir a informação requisitada n. 4
+double produtovalor[100];
 int n,k;
 int i=0;
 int w=0;
-for (n=0;n<=*quantdepartamentos;n++){ //ORGANIZAR UM VETOR SOMENTE COM PREÇO E VENDEDOR!
+for (n=0;n<=*quantdepartamentos;n++){ //ORGANIZAR UM VETOR SOMENTE COM LUCRO E PRODUTOS
 	for (k=4;k<v[n];k=k+5){
-		produtovalor[i]=departamento[n].pvpl[k]; //passaando valor do preço
+		produtovalor[i]=departamento[n].pvpl[k]; //Passaando valor do lucro
 		i++;
-		produtovalor[i]=departamento[n].pvpl[k-4]; // passando valor do vendedor
+		produtovalor[i]=departamento[n].pvpl[k-4]; // Passando valor do produto
 		i++;
-		w++; // Conta a quantidade de vendedores
+		w++; // Conta a quantidade
 	}
 }
-for (n=0;n<=*quantdepartamentos;n++){ //JUNTAR PRODUTOS REPETIDOS
-	for (i=1;i<=(float)((v[n]*2)/5);i=i+2){
-		for (k=1;k<=(float)((v[n]*2)/5);k++){
+for (n=0;n<=*quantdepartamentos;n++){
+	for (i=1;i<=(float)((v[n]*2)/5);i=i+2){//JUNTAR PRODUTOS REPETIDOS
+		for (k=1;k<(float)((v[n]*2)/5);k++){
 			if (produtovalor[i]==produtovalor[i+(2*k)]){
 				produtovalor[i-1]=produtovalor[i-1]+produtovalor[i+(2*k)-1];
 				produtovalor[i+(2*k)]=0;
@@ -235,9 +262,9 @@ for (n=0;n<=*quantdepartamentos;n++){ //JUNTAR PRODUTOS REPETIDOS
 		}
 	}
 }
-for (n=0;n<=*quantdepartamentos;n++){
+
 	for (i=0;i<50;i++){ //TECNICA DA BOLHA PRA ORDERNAR
-		for (n=0;n<=(float)(v[n]*2)/5;n=n+2){
+		for (n=0;n<=2*w;n=n+2){
 			if (produtovalor[n]<produtovalor[n+2]){
 				k=produtovalor[n];
 				produtovalor[n]=produtovalor[n+2];
@@ -248,61 +275,29 @@ for (n=0;n<=*quantdepartamentos;n++){
 			}
 		}
 	}
-}
-
 for (n=0;n<2*w;n=n+2)
-	printf ("Produto %d  -  Lucro obtido R$ %d\n", produtovalor[n+1], produtovalor[n]);
+	fprintf (arq, "(%.0lf, %.2lf) ", produtovalor[n+1], produtovalor[n]);
+	fprintf (arq, "\n");
 }
-
-int menu (){ //Responsável pela impressão do menu
-	int op;
-	fflush(stdin);
-	printf("|=========================================================================|\n");
-	printf("|===================================MENU==================================|\n");
-	printf("|=========================================================================|\n");
-	printf("|==   1.Ranking de Vendedores Decrescente Pelo Valor Total de Vendas    ==|\n");
-	printf("|==   2.Ranking de Vendedores Decrescente Pela Quantidade de Vendas     ==|\n");
-	printf("|==   3.Lista de Produtos Decrecente Pelo Valor Total de Vendas         ==|\n");
-	printf("|==       4.Lista de Produtos Decrescente Pelo Lucro Obtido             ==|\n");
-	printf("|==                              0. Sair                                ==|\n");
-	printf("|=========================================================================|\n");
-	printf("\nDigite uma opção do menu: ");	scanf("%d",&op);
-
-	return op;
-}
-
 
 int main()
 {
-	FILE *arqEntrada=NULL;
-	char caminhoarquivo[50]="C:\\Users\\Renato\\Desktop\\entrada.txt";
-	int k=1;
+	FILE *arqEntrada=NULL; 
+	FILE *arqSaida=NULL;
+	char caminhoarquivo[50]="entrada.txt";
+	char caminhosaida[60]="saida.txt";
 	depart vetor[MP];
 	int dado1[MP]; // indica ate que numero cada struct foi usado internamente
 	int quantdepusados; //Vai marcar quantos structs(departamentos) foram usados
+	arqSaida = fopen(caminhosaida, "w");
 	
 	if (abrirArquivo(arqEntrada,caminhoarquivo) && processaEntrada(arqEntrada,caminhoarquivo,vetor, dado1, &quantdepusados) == 1){
-	
-		do{//Exibir menu
-			switch(menu()){
-				
-			case 1: //Ranking Total de Vendas
-				vendasValor(vetor,dado1,&quantdepusados);										break;
-			case 2: //Ranking Quantidade de Vendas
-				vendasQuantidade(vetor,dado1,&quantdepusados);									break;
-			case 3: //Lista Produtos por Valor
-				produtoValor(vetor,dado1,&quantdepusados);										break;
-			case 4: //Lista Produtos por Lucro
-				produtoLucro(vetor,dado1,&quantdepusados);										break;
-			case 0: //Sair
-				printf("PROGRAMA FINALIZADO \n\n"); k=0;			break;
-			default://Numero Inválido
-				printf("Numero Inválido, repita a operação\n\n");	break;
-		}
-	}while(k!=0);
-	} 
-	
-	else printf("PROGRAMA FINALIZADO \n\n");
+				vendasValor(arqSaida, caminhosaida, vetor,dado1,&quantdepusados);	
+				vendasQuantidade(arqSaida, caminhosaida, vetor,dado1,&quantdepusados);	
+				produtoValor(arqSaida, caminhosaida, vetor,dado1,&quantdepusados);	
+				produtoLucro(arqSaida, caminhosaida, vetor,dado1,&quantdepusados);	
+
+	}
 
 	return 0;
 }
