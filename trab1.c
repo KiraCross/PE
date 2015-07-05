@@ -91,11 +91,11 @@ int processaEntrada (FILE *arq, char caminhoarquivo[MV],depart departamento[MP],
 						fimv=0; j=0;
 					}
 				}
-			}*quantdepartamentos=*quantdepartamentos+1;
+			}
 			}
 			fimp=0;v[o]=h-2; o++; h=0; 
-		} 
-	}
+		} *quantdepartamentos=*quantdepartamentos+1;
+	} *quantdepartamentos=*quantdepartamentos-2;
 	fimd=0; k=0;
 	fclose(arq);
 	return 1;
@@ -105,37 +105,153 @@ void vendasValor(depart departamento[MP],int v[MP], int *quantdepartamentos){
 int vendedorproduto[100];
 int n,k;
 int i=0;
+int w=0;
 for (n=0;n<=*quantdepartamentos;n++){ //ORGANIZAR UM VETOR SOMENTE COM PREÇO E VENDEDOR!
 	for (k=3;k<v[n];k=k+5){
 		vendedorproduto[i]=departamento[n].pvpl[k]; //passaando valor do preço
 		i++;
 		vendedorproduto[i]=departamento[n].pvpl[k-2]; // passando valor do vendedor
 		i++;
+		w++; // Conta a quantidade de vendedores
 	}
 }
-for (i=0;i<50;i++){ //TECNICA DA BOLHA PRA ORDERNAR
-	for (n=0;n<100;n=n+2){
-		if (vendedorproduto[n]<vendedorproduto[n+2]){
-			k=vendedorproduto[n];
-			vendedorproduto[n]=vendedorproduto[n+2];
-			vendedorproduto[n+2]=k;
-			k=vendedorproduto[n+1];
-			vendedorproduto[n+1]=vendedorproduto[n+3];
-			vendedorproduto[n+3]=k;
+for (n=0;n<=*quantdepartamentos;n++){
+	for (i=0;i<50;i++){ //TECNICA DA BOLHA PRA ORDERNAR
+		for (n=0;n<=(float)(v[n]*2)/5;n=n+2){
+			if (vendedorproduto[n]<vendedorproduto[n+2]){
+				k=vendedorproduto[n];
+				vendedorproduto[n]=vendedorproduto[n+2];
+				vendedorproduto[n+2]=k;
+				k=vendedorproduto[n+1];
+				vendedorproduto[n+1]=vendedorproduto[n+3];
+				vendedorproduto[n+3]=k;
+			}
 		}
 	}
 }
-for (n=0;n<100;n=n+2)
-	printf ("Vendedor %d  -  R$ %d", vendedorproduto[n+1], vendedorproduto[n]);
+for (n=0;n<2*w;n=n+2)
+	printf ("Vendedor %d  -  R$ %d\n", vendedorproduto[n+1], vendedorproduto[n]);
 }
-void vendasQuantidade(){
+void vendasQuantidade(depart departamento[MP],int v[MP], int *quantdepartamentos){
+int vendedorproduto[100];
+int n,k;
+int i=0;
+int w=0;
+for (n=0;n<=*quantdepartamentos;n++){ //ORGANIZAR UM VETOR SOMENTE COM PREÇO E VENDEDOR!
+	for (k=2;k<v[n];k=k+5){
+		vendedorproduto[i]=departamento[n].pvpl[k]; //passaando valor do preço
+		i++;
+		vendedorproduto[i]=departamento[n].pvpl[k-1]; // passando valor do vendedor
+		i++;
+		w++; // Conta a quantidade de vendedores
+	}
+}
+for (n=0;n<=*quantdepartamentos;n++){
+	for (i=0;i<50;i++){ //TECNICA DA BOLHA PRA ORDERNAR
+		for (n=0;n<=(float)(v[n]*2)/5;n=n+2){
+			if (vendedorproduto[n]<vendedorproduto[n+2]){
+				k=vendedorproduto[n];
+				vendedorproduto[n]=vendedorproduto[n+2];
+				vendedorproduto[n+2]=k;
+				k=vendedorproduto[n+1];
+				vendedorproduto[n+1]=vendedorproduto[n+3];
+				vendedorproduto[n+3]=k;
+			}
+		}
+	}
+}
+for (n=0;n<2*w;n=n+2)
+	printf ("Vendedor %d  -  Quantidade total de vendas %d\n", vendedorproduto[n+1], vendedorproduto[n]);
 
 }
-void produtoValor(){
-	
+void produtoValor(depart departamento[MP],int v[MP], int *quantdepartamentos){
+int produtovalor[100];
+int n,k;
+int i=0;
+int w=0;
+for (n=0;n<=*quantdepartamentos;n++){ //ORGANIZAR UM VETOR SOMENTE COM PREÇO E VENDEDOR!
+	for (k=3;k<v[n];k=k+5){
+		produtovalor[i]=departamento[n].pvpl[k]; //passaando valor do preço
+		i++;
+		produtovalor[i]=departamento[n].pvpl[k-3]; // passando valor do vendedor
+		i++;
+		w++; // Conta a quantidade de vendedores
+	}
 }
-void produtoLucro(){
-	
+for (n=0;n<=*quantdepartamentos;n++){ //JUNTAR PRODUTOS REPETIDOS
+	for (i=1;i<=(float)((v[n]*2)/5);i=i+2){
+		for (k=1;k<=(float)((v[n]*2)/5);k++){
+			if (produtovalor[i]==produtovalor[i+(2*k)]){
+				produtovalor[i-1]=produtovalor[i-1]+produtovalor[i+(2*k)-1];
+				produtovalor[i+(2*k)]=0;
+				produtovalor[i+(2*k)-1]=0;
+				w=w-1;
+			}
+		}
+	}
+}
+for (n=0;n<=*quantdepartamentos;n++){
+	for (i=0;i<50;i++){ //TECNICA DA BOLHA PRA ORDERNAR
+		for (n=0;n<=(float)(v[n]*2)/5;n=n+2){
+			if (produtovalor[n]<produtovalor[n+2]){
+				k=produtovalor[n];
+				produtovalor[n]=produtovalor[n+2];
+				produtovalor[n+2]=k;
+				k=produtovalor[n+1];
+				produtovalor[n+1]=produtovalor[n+3];
+				produtovalor[n+3]=k;
+			}
+		}
+	}
+}
+
+for (n=0;n<2*w;n=n+2)
+	printf ("Produto %d  -  R$ %d\n", produtovalor[n+1], produtovalor[n]);
+
+}
+void produtoLucro(depart departamento[MP],int v[MP], int *quantdepartamentos){
+int produtovalor[100];
+int n,k;
+int i=0;
+int w=0;
+for (n=0;n<=*quantdepartamentos;n++){ //ORGANIZAR UM VETOR SOMENTE COM PREÇO E VENDEDOR!
+	for (k=4;k<v[n];k=k+5){
+		produtovalor[i]=departamento[n].pvpl[k]; //passaando valor do preço
+		i++;
+		produtovalor[i]=departamento[n].pvpl[k-4]; // passando valor do vendedor
+		i++;
+		w++; // Conta a quantidade de vendedores
+	}
+}
+for (n=0;n<=*quantdepartamentos;n++){ //JUNTAR PRODUTOS REPETIDOS
+	for (i=1;i<=(float)((v[n]*2)/5);i=i+2){
+		for (k=1;k<=(float)((v[n]*2)/5);k++){
+			if (produtovalor[i]==produtovalor[i+(2*k)]){
+				produtovalor[i-1]=produtovalor[i-1]+produtovalor[i+(2*k)-1];
+				produtovalor[i+(2*k)]=0;
+				produtovalor[i+(2*k)-1]=0;
+				w=w-1;
+			}
+		}
+	}
+}
+for (n=0;n<=*quantdepartamentos;n++){
+	for (i=0;i<50;i++){ //TECNICA DA BOLHA PRA ORDERNAR
+		for (n=0;n<=(float)(v[n]*2)/5;n=n+2){
+			if (produtovalor[n]<produtovalor[n+2]){
+				k=produtovalor[n];
+				produtovalor[n]=produtovalor[n+2];
+				produtovalor[n+2]=k;
+				k=produtovalor[n+1];
+				produtovalor[n+1]=produtovalor[n+3];
+				produtovalor[n+3]=k;
+			}
+		}
+	}
+}
+
+for (n=0;n<2*w;n=n+2)
+	printf ("Produto %d  -  Lucro obtido R$ %d\n", produtovalor[n+1], produtovalor[n]);
 }
 
 int menu (){ //Responsável pela impressão do menu
@@ -173,11 +289,11 @@ int main()
 			case 1: //Ranking Total de Vendas
 				vendasValor(vetor,dado1,&quantdepusados);										break;
 			case 2: //Ranking Quantidade de Vendas
-				vendasQuantidade();									break;
+				vendasQuantidade(vetor,dado1,&quantdepusados);									break;
 			case 3: //Lista Produtos por Valor
-				produtoValor();										break;
+				produtoValor(vetor,dado1,&quantdepusados);										break;
 			case 4: //Lista Produtos por Lucro
-				produtoLucro();										break;
+				produtoLucro(vetor,dado1,&quantdepusados);										break;
 			case 0: //Sair
 				printf("PROGRAMA FINALIZADO \n\n"); k=0;			break;
 			default://Numero Inválido
