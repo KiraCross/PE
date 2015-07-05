@@ -117,10 +117,10 @@ for (n=0;n<=*quantdepartamentos;n++){ //ORGANIZAR UM VETOR SOMENTE COM PREÇO E 
 for (n=0;n<=*quantdepartamentos;n++){
 	for (i=1;i<=(float)((v[n]*2)/5);i=i+2){//JUNTAR VENDEDORES REPETIDOS
 		for (k=1;k<(float)((v[n]*2)/5);k++){
-			if (produtovalor[i]==produtovalor[i+(2*k)]){
-				produtovalor[i-1]=produtovalor[i-1]+produtovalor[i+(2*k)-1];
-				produtovalor[i+(2*k)]=0;
-				produtovalor[i+(2*k)-1]=0;
+			if (vendedorproduto[i]==vendedorproduto[i+(2*k)]){
+				vendedorproduto[i-1]=vendedorproduto[i-1]+vendedorproduto[i+(2*k)-1];
+				vendedorproduto[i+(2*k)]=0;
+				vendedorproduto[i+(2*k)-1]=0;
 				w=w-1;
 			}
 		}
@@ -161,10 +161,10 @@ for (n=0;n<=*quantdepartamentos;n++){ //ORGANIZAR UM VETOR SOMENTE COM TOTAL DE 
 for (n=0;n<=*quantdepartamentos;n++){
 	for (i=1;i<=(float)((v[n]*2)/5);i=i+2){//JUNTAR VENDEDORES REPETIDOS
 		for (k=1;k<(float)((v[n]*2)/5);k++){
-			if (produtovalor[i]==produtovalor[i+(2*k)]){
-				produtovalor[i-1]=produtovalor[i-1]+produtovalor[i+(2*k)-1];
-				produtovalor[i+(2*k)]=0;
-				produtovalor[i+(2*k)-1]=0;
+			if (vendedorproduto[i]==vendedorproduto[i+(2*k)]){
+				vendedorproduto[i-1]=vendedorproduto[i-1]+vendedorproduto[i+(2*k)-1];
+				vendedorproduto[i+(2*k)]=0;
+				vendedorproduto[i+(2*k)-1]=0;
 				w=w-1;
 			}
 		}
