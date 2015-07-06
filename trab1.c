@@ -24,9 +24,9 @@ int processaEntrada (FILE *arq, char caminhoarquivo[MV],depart departamento[MP],
 	int valor;
 	int quantidade[100];
 	int qtotal=0;
-	float lucro;
+	double lucro;
 	int fimq = 0,fimv=0,fimp=0,fimd=0;
-	int i=0,j=0,h=0,k=0;
+	int i=0,j=0,h=0,k=0, t=0, x=0;
 	int mj=0,mh=0;
 	int o=0; //criada pra guardar quantos espaços H serão usados em cada struct
 	*quantdepartamentos=0; //Irá contar a quantidade de departamentos usados
@@ -36,22 +36,18 @@ int processaEntrada (FILE *arq, char caminhoarquivo[MV],depart departamento[MP],
 	while(fimd != -1){ //Encerra Departamentos
 	fscanf(arq,"%d",&k); // k é o numero do departamento
 	fimd = k;
-	
 		if(k != -1){
 		
 			while(fimp != -1){ //Encerra os Produtos do Departamento
 			fscanf(arq,"%f",&departamento[*quantdepartamentos].pvpl[h]); // Pergunta produto
 			fimp = departamento[*quantdepartamentos].pvpl[h];
-			
 			if(mh>MP){ //Verifica se o numero de produtos do arquivo atinge o maior que o permitido.
-								printf("Numero de Produtos Excedido. Conserte o Arquivo e Reinicie o Programa\n");
 								fimq=-1; fimp=-1; fimv=-1; fimd=-1; return 0;}
 			else{
 				mh++;
 				if(fimp != -1){
 				fscanf(arq,"%d",&valor);
-				fscanf(arq,"%f",&lucro);
-				
+				fscanf(arq,"%lf",&lucro);
 					if(departamento[*quantdepartamentos].pvpl[h] != -1){
 					h++;
 					
@@ -60,8 +56,11 @@ int processaEntrada (FILE *arq, char caminhoarquivo[MV],depart departamento[MP],
 						fimv = departamento[*quantdepartamentos].pvpl[h];
 						
 							if(departamento[*quantdepartamentos].pvpl[h] != -1){
+								if (t==1) {
+									x=departamento[*quantdepartamentos].pvpl[h];
+									departamento[*quantdepartamentos].pvpl[h]=departamento[*quantdepartamentos].pvpl[h-5];h++;
+									departamento[*quantdepartamentos].pvpl[h]=x;}
 								if(mj>MV){ //Verifica se o numero de vendedores do arquivo atinge o maior que o permitido.
-								printf("Numero de Vendedores Excedido. Conserte o Arquivo e Reinicie o Programa\n");
 								fimq=-1; fimp=-1; fimv=-1; fimd=-1; return 0;}
 								else{
 								mj++; h++;
@@ -69,10 +68,10 @@ int processaEntrada (FILE *arq, char caminhoarquivo[MV],depart departamento[MP],
 									while(fimq != -1){ //Encerra a leitura de Quantidades e Passa pro proximo Vendedor Caso Encontre o Valor -1
 										fscanf(arq,"%d",&quantidade[i]);
 										fimq = quantidade[i];
-										
 										if (quantidade[i] != -1){
 									    qtotal = qtotal + quantidade[i];
 										i++;
+										t=1;
 										}
 
 									}
@@ -80,12 +79,12 @@ int processaEntrada (FILE *arq, char caminhoarquivo[MV],depart departamento[MP],
 								h++;
 								departamento[*quantdepartamentos].pvpl[h]=qtotal*valor;
 								h++;
-								departamento[*quantdepartamentos].pvpl[h]=departamento[*quantdepartamentos].pvpl[h-1]*lucro;
+								departamento[*quantdepartamentos].pvpl[h]=(valor*qtotal*lucro)/100;
 								h++;
 								fimq=0; qtotal=0; i=0;
 								}
-							}  departamento[*quantdepartamentos].pvpl[h]=departamento[*quantdepartamentos].pvpl[h-4]; h++;
-											
+							}  
+							if(departamento[*quantdepartamentos].pvpl[h] == -1) t=0;				
 						}
 						fimv=0; j=0;
 					}
@@ -97,6 +96,11 @@ int processaEntrada (FILE *arq, char caminhoarquivo[MV],depart departamento[MP],
 	} *quantdepartamentos=*quantdepartamentos-2; //Compensação para nao ter erro, pois repete 2 vezes a mais.
 	fimd=0; k=0;
 	fclose(arq);
+	for (k=0; k<=*quantdepartamentos;k++){
+		for (h=0; h<=v[k];h++){
+			printf ("%.2f\n",departamento[k].pvpl[h] );
+		}
+	}
 	return 1;
 }
 
@@ -141,8 +145,8 @@ for (c=0;c<=*quantdepartamentos;c++){
 	}
 }
 for (n=0;n<2*w;n=n+2)
-	fprintf (arq, "(%.0lf, %.2lf) ", vendedorproduto[n+1], vendedorproduto[n]);
-	fprintf (arq, "\n");
+	printf ("(%.0lf, %.2lf) ", vendedorproduto[n+1], vendedorproduto[n]);
+	printf ("\n");
 }
 void vendasQuantidade(FILE *arq, char caminhosaida[MV], depart departamento[MP],int v[MP], int *quantdepartamentos){// Função responsavel por imprimir a informação requisitada n. 2
 double vendedorproduto[100];
@@ -185,8 +189,8 @@ for (c=0;c<=*quantdepartamentos;c++){
 	}
 }
 for (n=0;n<2*w;n=n+2)
-	fprintf (arq,"(%.0lf, %.0lf) ", vendedorproduto[n+1], vendedorproduto[n]);
-	fprintf (arq,"\n");
+	printf ("(%.0lf, %.0lf) ", vendedorproduto[n+1], vendedorproduto[n]);
+	printf ("\n");
 
 }
 void produtoValor(FILE *arq, char caminhosaida[MV], depart departamento[MP],int v[MP], int *quantdepartamentos){// Função responsavel por imprimir a informação requisitada n. 3
@@ -232,8 +236,8 @@ for (c=0;c<=*quantdepartamentos;c++){
 }
 
 for (n=0;n<2*w;n=n+2)
-	fprintf (arq, "(%.0lf, %.2lf) ", produtovalor[n+1], produtovalor[n]);
-	fprintf (arq, "\n");
+	printf ("(%.0lf, %.2lf) ", produtovalor[n+1], produtovalor[n]);
+	printf ("\n");
 
 }
 void produtoLucro(FILE *arq, char caminhosaida[MV], depart departamento[MP],int v[MP], int *quantdepartamentos){// Função responsavel por imprimir a informação requisitada n. 4
@@ -276,8 +280,8 @@ for (n=0;n<=*quantdepartamentos;n++){
 		}
 	}
 for (n=0;n<2*w;n=n+2)
-	fprintf (arq, "(%.0lf, %.2lf) ", produtovalor[n+1], produtovalor[n]);
-	fprintf (arq, "\n");
+	printf ("(%.0lf, %.2lf) ", produtovalor[n+1], produtovalor[n]);
+	printf ("\n");
 }
 
 int main()
