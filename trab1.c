@@ -137,8 +137,8 @@ for (g=0;g<=*quantdepartamentos;g++){
 		}
 	}
 }
-for (n=0;(n<w)&&(vendedorproduto[n]!=0);n=n+2){
-	fprintf (arq,"(%.0lf, %.2lf) ", vendedorproduto[n+1], vendedorproduto[n]);
+for (n=0;(n<w);n=n+2){
+	if ((vendedorproduto[n+1]!=0) && (vendedorproduto[n]!=0))	fprintf (arq,"(%.0lf, %.2lf) ", vendedorproduto[n+1], vendedorproduto[n]);
 }
 
 	fprintf (arq,"\n");
