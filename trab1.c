@@ -48,6 +48,7 @@ int processaEntrada (FILE *arq, char caminhoarquivo[MV],depart departamento[MP],
 				if(fimp != -1){
 				fscanf(arq,"%d",&valor);
 				fscanf(arq,"%lf",&lucro);
+					lucro=((lucro/100)*valor);
 					if(departamento[*quantdepartamentos].pvpl[h] != -1){
 					h++;
 					
@@ -78,8 +79,8 @@ int processaEntrada (FILE *arq, char caminhoarquivo[MV],depart departamento[MP],
 								departamento[*quantdepartamentos].pvpl[h]=qtotal;
 								h++;
 								departamento[*quantdepartamentos].pvpl[h]=qtotal*valor;
-								h++;
-								departamento[*quantdepartamentos].pvpl[h]=(valor*qtotal*lucro)/100;
+								h=h+1;
+								departamento[*quantdepartamentos].pvpl[h]=qtotal*lucro;
 								h++;
 								fimq=0; qtotal=0; i=0;
 								}
